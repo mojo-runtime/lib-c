@@ -1,15 +1,25 @@
 #pragma once
 
-#include <feature/__has_builtin_memcpy.h>
 #include "size_t.h"
 
 static inline
 void*
-memcpy(void* dest, const void* src, size_t n)
+memcpy(void* target, const void* source, size_t count)
 {
-#if __has_builtin_memcpy
-    return __builtin_memcpy(dest, src, n);
-#else
-#  error
-#endif
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wold-style-cast"
+
+    char* target8 = (char*)target;
+    char* source8 = (char*)source;
+
+#pragma clang diagnostic pop
+
+    --target8;
+    --source8;
+
+    while (count--) {
+        *++target8 = *++source8;
+    }
+
+    return target;
 }
